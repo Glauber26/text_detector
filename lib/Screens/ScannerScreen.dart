@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_advanced_networkimage/transition.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:text_detector/Stores/ConversaoStore.dart';
@@ -76,13 +77,51 @@ class _ScannersScreenState extends State<ScannersScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _getFAB()/*FloatingActionButton(
         onPressed: () {
           _scanButton();
         },
         tooltip: 'Adicionar foto',
         child: Icon(Icons.add_photo_alternate),
-      ),
+      ),*/
+    );
+  }
+
+  Widget _getFAB() {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.list_view,
+      animatedIconTheme: IconThemeData(size: 22),
+      backgroundColor: Colors.red,
+      visible: true,
+      curve: Curves.bounceIn,
+      children: [
+        // FAB 1
+        SpeedDialChild(
+            child: Icon(Icons.photo_camera),
+            backgroundColor: Colors.red,
+            onTap: () {
+              _scanButton(ImageSource.camera);
+            },
+            label: 'Tirar Foto',
+            labelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 16.0),
+            labelBackgroundColor: Colors.red),
+        // FAB 2
+        SpeedDialChild(
+            child: Icon(Icons.photo),
+            backgroundColor: Colors.red,
+            onTap: () {
+              _scanButton(ImageSource.gallery);
+            },
+            label: 'Selecionar Imagem da Galeria',
+            labelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 16.0),
+            labelBackgroundColor: Colors.red)
+      ],
     );
   }
 
@@ -106,7 +145,7 @@ class _ScannersScreenState extends State<ScannersScreen> {
                         height: 8,
                       ),
                       Text(
-                        'Clique no ícone da imagem para escanear um texto',
+                        'Clique no botão abaixo para escanear um texto',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14,
@@ -176,9 +215,9 @@ class _ScannersScreenState extends State<ScannersScreen> {
         },
       );
 
-  _scanButton() async {
+  _scanButton(ImageSource imagemSource) async {
     File img;
-    img = await ImagePicker.pickImage(source: ImageSource.camera);
+    img = await ImagePicker.pickImage(source: imagemSource);
 
     if (img == null) {
       msgAviso('Ops', 'Imagem não carregada', () {
